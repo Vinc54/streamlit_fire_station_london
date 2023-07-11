@@ -9,12 +9,12 @@ import seaborn as sns
 url_incident="https://data.london.gov.uk/download/london-fire-brigade-incident-records/73728cf4-b70e-48e2-9b97-4e4341a2110d/LFB%20Incident%20data%20-%20Datastore%20-%20with%20notional%20cost%20and%20UPRN%20from%20January%202009.zip"
 @st.cache_data
 def charge_data_incident():
-    return pd.read_csv(url_incident, compression='zip')
+    return pd.read_csv(url_incident, compression='zip', low_memory=False)
 
 url_mobilisation="https://data.london.gov.uk/download/london-fire-brigade-mobilisation-records/fcbd2e97-b5bf-4117-a50f-d596181bc8d3/LFB%20Mobilisation%20data%20from%20January%202009.zip"
 @st.cache_data
 def charge_data_mobilisation():
-    return pd.read_csv(url_mobilisation, compression='zip')
+    return pd.read_csv(url_mobilisation, compression='zip', low_memory=False)
 
 @st.cache_data
 def charge_data_vehicule():
@@ -24,9 +24,16 @@ def charge_data_vehicule():
 def merge_df(df1,df2, the_left_on, the_right_on, the_how ):
     return pd.merge(df1,df2,left_on=the_left_on,right_on=the_right_on,how=the_how)
 
+
+@st.cache_resource   
+def merge_df_vehicule(df1,df2, the_left_on, the_right_on, the_how ):
+    return pd.merge(df1,df2,left_on=the_left_on,right_on=the_right_on,how=the_how)
+
 df_incident = charge_data_incident()
 df_mob = charge_data_mobilisation()
+df_vehicule = charge_data_vehicule()
 df=merge_df(df_incident,df_mob, 'IncidentNumber', 'IncidentNumber', 'left' )
+df=merge_df_vehicule(df,df_vehicule, 'Resource_Code_vehicule', 'Id_VehicleType', 'left' )
 
 #st.title("Projet des temps de déplacement des pompiers de Londre")
 st.sidebar.title("Data visualisation")
@@ -77,4 +84,8 @@ if page == pages[1] :
     
 if page == pages[2] : 
     st.write("### Analyse de l'usage des types de véhicule par typologie d'incident")
+    df_count_vehicule = df.groupby(['VehicleType']).count()
+    plot = plot(df_count_vehicule, kind='pie', y='IncidentNumber',  autopct = '%1.0f%%')
     
+    plt.title("Répartition d'utilisation des véhicules", fontsize=12);
+    st.pyplot(fig) 
