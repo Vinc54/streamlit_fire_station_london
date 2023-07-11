@@ -40,5 +40,9 @@ st.markdown(
     Le second jeu de données contient les détails de chaque camion de pompiers envoyé sur les lieux d'un incident depuis janvier 2009. Des informations sont fournies sur l'appareil mobilisé, son lieu de déploiement et les heures d'arrivée sur les lieux de l'incident.
 
     **👈 Selectionnez sur la gauche les différentes étapes** 
+    ### <div align="center">⚠️</div>
+    
+    #### :red[Pour des raison de limitation de la plateforme Streamlit.io (Max 1Go de mémoire), l'analyse est effectuée sur l'année 2022]*
+    *L'analyse complete a été réalisée sur les postes de travail dont le reflet est disponible dans le rapport.
 """
-)
+, unsafe_allow_html=True)
