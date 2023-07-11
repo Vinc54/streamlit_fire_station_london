@@ -1,115 +1,49 @@
-# -*- coding: utf-8 -*-
+from pathlib import Path
 
 import streamlit as st
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix
-
-df=pd.read_csv("train.csv")
-
-st.title("Projet de classification binaire Titanic by me")
-st.sidebar.title("Sommaire")
-pages=["Exploration", "DataVizualization", "Modélisation"]
-page=st.sidebar.radio("Sommaire", pages)
-
-if page == pages[0] : 
-    st.write("### Introduction")
-    st.write(df.shape)
-    st.dataframe(df.describe())
-    if st.checkbox("Afficher les NA") :
-        st.dataframe(df.isna().sum())
-    if st.checkbox("échantillon de 5 lignes") :
-        st.dataframe(df.sample(5))
-
-      
-if page == pages[1] : 
-    st.write("### DataVizualization")
-    fig = plt.figure()
-    sns.countplot(x = 'Survived', data = df)
-    st.pyplot(fig)
-    
-    fig = plt.figure()
-    sns.countplot(x = 'Sex', data = df)
-    plt.title("Répartition du genre des passagers")
-    st.pyplot(fig)
-    fig = plt.figure()
-    sns.countplot(x = 'Pclass', data = df)
-    plt.title("Répartition des classes des passagers")
-    st.pyplot(fig)
-    fig = sns.displot(x = 'Age', data = df)
-    plt.title("Distribution de l'âge des passagers")
-    st.pyplot(fig)
-    
-    fig = plt.figure()
-    sns.countplot(x = 'Survived', hue='Sex', data = df)
-    st.pyplot(fig)
-    fig = sns.catplot(x='Pclass', y='Survived', data=df, kind='point')
-    st.pyplot(fig)
-    fig = sns.lmplot(x='Age', y='Survived', hue="Pclass", data=df)
-    st.pyplot(fig)
-    
-if page == pages[2] : 
-    st.write("### Modélisation")
-    
-    df = df.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1)
-    
-    y = df['Survived']
-    X = df.drop(['Survived'], axis=1)
-    X_cat = df[['Pclass', 'Sex',  'Embarked']]
-    X_num = df[['Age', 'Fare', 'SibSp', 'Parch']]
-    
-    
-    
-    for col in X_cat.columns:
-      X_cat[col] = X_cat[col].fillna(X_cat[col].mode()[0])
-    for col in X_num.columns:
-      X_num[col] = X_num[col].fillna(X_num[col].median())
-    X_cat_scaled = pd.get_dummies(X_cat, columns=X_cat.columns)
-    X = pd.concat([X_cat_scaled, X_num], axis = 1)
 
 
+st.set_page_config(
+    page_title="LFB",
+    page_icon="🚨",
+)
+
+
+from st_pages import Page, Section, add_page_title, show_pages
+
+
+
+show_pages(
+    [
+        Page("firestationlondon.py", "Home", "👨‍🚒"),
+        # Can use :<icon-name>: or the actual icon
+        Page("les_pages/explore.py", "Exploration des données", "📄"),
+        # Since this is a Section, all the pages underneath it will be indented
+        # The section itself will look like a normal page, but it won't be clickable
+        #Section(name="Analyse des données", icon="📈"),
+        # The pages appear in the order you pass them
+        Page("les_pages/dataviz.py", "Data visualisation", "📊"),
+        Page("les_pages/Mapping.py", "Cartographie", "🌍"),
+ 
+        Page("les_pages/model.py", "Modélisation", "🔣", in_section=False),
+
+    ]
+)
+
+add_page_title()  # Optional method to add title and icon to current page
+
+
+st.title("Temps de Réponse de la Brigade des Pompiers de Londres 🚒")
+
+st.sidebar.success("Introduction")
+st.markdown(
+    """
+    L’objectif de ce projet est d’analyser et/ou d’estimer les temps de réponse et de mobilisation de la Brigade des Pompiers de Londres.La brigade des pompiers de Londres est le service d'incendie et de sauvetage le plus actif du Royaume-Uni  et l'une des plus grandes organisations de lutte contre l'incendie et de sauvetage au monde.
     
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
-    
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    X_train[X_num.columns] = scaler.fit_transform(X_train[X_num.columns])
-    X_test[X_num.columns] = scaler.transform(X_test[X_num.columns])
-  
-    
-    def prediction(classifier):
-        if classifier == 'Random Forest':
-            clf = RandomForestClassifier()
-        elif classifier == 'SVC':
-            clf = SVC()
-        elif classifier == 'Logistic Regression':
-            clf = LogisticRegression()
-        clf.fit(X_train, y_train)
-        return clf  
-    
-    def scores(clf, choice):
-        if choice == 'Accuracy':
-            return clf.score(X_test, y_test)
-        elif choice == 'Confusion matrix':
-            return confusion_matrix(y_test, clf.predict(X_test))
-        
-    choix = ['Random Forest', 'SVC', 'Logistic Regression']
-    option = st.selectbox('Choix du modèle', choix)
-    st.write('Le modèle choisi est :', option)
-    
-    clf = prediction(option)
-    
-    display = st.radio('Que souhaitez-vous montrer ?', ('Accuracy', 'Confusion matrix'))
-    if display == 'Accuracy':
-        st.write(scores(clf, display))
-    elif display == 'Confusion matrix':
-        st.dataframe(scores(clf, display))
-  
-  
+    Le premier jeu de données fourni contient les détails de chaque incident traité depuis janvier 2009. Des informations sont fournies sur la date et le lieu de l'incident ainsi que sur le type d'incident traité.
+
+    Le second jeu de données contient les détails de chaque camion de pompiers envoyé sur les lieux d'un incident depuis janvier 2009. Des informations sont fournies sur l'appareil mobilisé, son lieu de déploiement et les heures d'arrivée sur les lieux de l'incident.
+
+    **👈 Selectionnez sur la gauche les différentes étapes** 
+"""
+)
