@@ -5,6 +5,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+st.set_page_config(
+    page_title="LFB",
+    page_icon="🚨",
+)
 
 df_incident = commun.charge_data_incident()
 df_mob = commun.charge_data_mobilisation()
@@ -30,7 +34,7 @@ if page == pages[0] :
 if page == pages[1] : 
 
     st.write("### nombre d'appels par heure")
-    df_group1 =  df_incident.groupby(['HourOfCall', 'IncidentGroup'], as_index = False).agg({'IncidentNumber':'count'})
+    df_group1 = df_incident.groupby(['HourOfCall', 'IncidentGroup'], as_index = False).agg({'IncidentNumber':'count'})
 
     fig = plt.figure()
     plot = sns.relplot(x='HourOfCall', y='IncidentNumber', kind='line', data=df_group1, hue='IncidentGroup', height=4, aspect=2)
