@@ -6,5 +6,5 @@ seaborn
 scikit-learn
 st_pages
 geopandas
-
+geoplot
 
