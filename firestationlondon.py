@@ -52,7 +52,7 @@ st.markdown(texte,unsafe_allow_html=True)
 
 import psutil
 def main():
-    st.title("Affichage de la mémoire consommée par Streamlit")
+    #st.title("Affichage de la mémoire consommée par Streamlit")
 
     # Obtenir l'ID du processus Streamlit
     streamlit_pid = psutil.Process()
