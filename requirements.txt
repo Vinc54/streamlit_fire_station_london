@@ -7,5 +7,5 @@ scikit-learn
 st_pages
 geopandas
 folium
-st_folium
+streamlit-folium
 
