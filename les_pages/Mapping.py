@@ -10,6 +10,11 @@ import pandas as pd
 
 import seaborn as sns
 
+st.set_page_config(
+    page_title="LFB",
+    page_icon="🚨",
+    layout="wide"
+)
 
 pages=["Londres", "les interventions", "autres cartos", "test"]
 page=st.sidebar.radio("Sommaire", pages)
@@ -25,30 +30,47 @@ df=commun.merge_df_vehicule(df,df_vehicule, 'Resource_Code_vehicule', 'Id_Vehicl
 
 if page == pages[0] : 
     st.title("Les quartiers de Londre")
-    st.write(df_quartier.sample(1))
+    st.write(df_quartier.sample(1), text_align="center")
     
-    fig, ax = plt.subplots()
-    df_quartier.plot(ax=ax, edgecolor = 'black', facecolor="none", figsize = (5,5))
-    st.pyplot(fig) 
+    col1, col2 , col3= st.columns(3)
+    with col2:
+        fig, ax = plt.subplots(figsize = (5,5))
+        df_quartier.plot(ax=ax, edgecolor = 'black', facecolor="none")
+        st.pyplot(fig) 
+        
     
     
     st.title("Les casernes de pompier")
     st.write(df_stations.sample(1))
+        
+    col1, col2 , col3= st.columns(3)
+    with col2:        
+        fig, ax = plt.subplots()
+        df_quartier.plot(ax = ax, edgecolor = 'black', facecolor="none", figsize = (5,5))
+        df_stations.plot(ax = ax, alpha = 1, color = 'red', markersize=5)
+        st.pyplot(fig) 
+
     
-    fig, ax = plt.subplots()
-    df_quartier.plot(ax = ax, edgecolor = 'black', facecolor="none", figsize = (5,5))
-    df_stations.plot(ax = ax, alpha = 1, color = 'red', markersize=5)
-    st.pyplot(fig) 
+    
+    
+    
+    
     
 if page == pages[1] :
     st.title("Les interventions")
     st.write(geo_data_gpd.sample(1))
-       
+   
+    #width = st.sidebar.slider("plot width", 1, 25, 3)
+    #height = st.sidebar.slider("plot height", 1, 25, 1)
+    
     fig, ax = plt.subplots()
-    df_quartier.plot(ax = ax, edgecolor = 'black', facecolor="none", figsize = (10,10),zorder=3)
+    df_quartier.plot(ax = ax, edgecolor = 'black', facecolor="none", zorder=3)
     geo_data_gpd.plot(ax = ax, alpha = 0.1, color = 'blue',markersize=1)
     df_stations.plot(ax = ax, alpha = 0.8, color = 'red',markersize=20)
-    st.pyplot(fig) 
+    temp_file = "temp_plot.png"
+    plt.savefig(temp_file)
+    st.image(temp_file, width=600)
+
     
 
 
@@ -56,26 +78,30 @@ if page == pages[1] :
 if page == pages[2] :
     
     df_quartier['borough'] = df_quartier['borough'].str.upper()
-
-
+    st.title("Les temps de déplacement moyens")
+    
     def display_time_filters(df):
         year_list = list(df['CalYear_x'].unique())
         year_list.sort()
-        year = st.selectbox('Année', year_list, len(year_list)-1)
-        st.header(f'Année : {year}')
+        year = st.sidebar.selectbox('Année', year_list, len(year_list)-1)
+        #st.header(f'Année : {year}')
         return year
     
     
     
     def Affiche_resultat(df, year, quartier):
-        st.metric('titre', 123456)
-        df_filtered = df[(df['CalYear_x'] == year) & (df['IncGeo_BoroughName'] == quartier)]
         
+        df_filtered = df[(df['CalYear_x'] == year) & (df['IncGeo_BoroughName'] == quartier)]
+        #sns.set(font_scale=.3)
+        sns.set(rc={"figure.figsize":(15, 20)})
         fig = plt.figure()
         
-        plot =  sns.displot(df_filtered['FirstPumpArriving_AttendanceTime'], bins=10, rug=True, kde=True, color='red');
-        
+        plot =  sns.displot(df_filtered['FirstPumpArriving_AttendanceTime'], bins=20, rug=True, kde=True, color='blue');
+        valeur_target = 360
+        plt.axvline(x=valeur_target, color='red', linestyle='--', label=f'Target ({valeur_target / 60 } min)')
+        plt.legend()
         st.pyplot(plot.fig)
+        st.metric('titre', 123456)
         
         
         
@@ -123,14 +149,15 @@ if page == pages[2] :
 
 
     def main():
-        #year = display_time_filters(df)
-        #quartier = display_map(df, year)
-        
         year = display_time_filters(df)
-        quartier = display_map(df, year)
+        col1, col2 = st.columns(2)
+        with col1:
+            quartier = display_map(df, year)
+            st.header(f'Année : {year} pour le quatier : {quartier}')
+        with col2:
+            Affiche_resultat(df, year, quartier)   
         
-        Affiche_resultat(df, year, quartier)
-       
+        
         st.subheader(f'Nom du Quatier : {quartier}')
         
         

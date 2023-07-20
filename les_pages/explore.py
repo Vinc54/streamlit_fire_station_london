@@ -28,7 +28,7 @@ if page == pages[0] :
     st.markdown(
         """
         Les données sont réparties en 2 fichiers :
-        - les incidents : l'ensemble des intervention réalisées par les pompiers'
+        - les incidents : l'ensemble des interventions réalisées par les pompiers'
         - les mobilisations : les différentes ressources (véhicules) mobilisées pour réaliser ces interventions
             
             
