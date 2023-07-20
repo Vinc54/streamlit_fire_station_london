@@ -49,3 +49,26 @@ texte = f"""
 
 
 st.markdown(texte,unsafe_allow_html=True)
+
+import psutil
+def main():
+    st.title("Affichage de la mémoire consommée par Streamlit")
+
+    # Obtenir l'ID du processus Streamlit
+    streamlit_pid = psutil.Process()
+
+    # Obtenir les informations sur la mémoire du processus Streamlit
+    mem_info = streamlit_pid.memory_info()
+
+    # Afficher la mémoire consommée par Streamlit dans l'application
+    st.sidebar.write("Mémoire utilisée par Streamlit : ", convert_bytes(mem_info.rss))
+
+
+# Fonction pour convertir les octets en méga-octets, gigaoctets, etc.
+def convert_bytes(num):
+    for x in ['octets', 'Ko', 'Mo', 'Go', 'To']:
+        if num < 1024.0:
+            return f"{num:.2f} {x}"
+        num /= 1024.0
+if __name__ == "__main__":
+    main()

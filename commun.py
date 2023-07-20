@@ -9,6 +9,7 @@ import json
 years = [2022,2023]
 years_string = "2022,2023"
 
+#Chargement des données Incidents depuis le site des données de Londre.
 url_incident="https://data.london.gov.uk/download/london-fire-brigade-incident-records/73728cf4-b70e-48e2-9b97-4e4341a2110d/LFB%20Incident%20data%20-%20Datastore%20-%20with%20notional%20cost%20and%20UPRN%20from%20January%202009.zip"
 #url_incident="data/incident.csv"
 @st.cache_data
@@ -17,6 +18,7 @@ def charge_data_incident():
     df = df[df.CalYear.isin(years)]
     return df
 
+#Chargement des données mobilisation depuis le site des données de Londre.
 url_mobilisation="https://data.london.gov.uk/download/london-fire-brigade-mobilisation-records/fcbd2e97-b5bf-4117-a50f-d596181bc8d3/LFB%20Mobilisation%20data%20from%20January%202009.zip"
 #url_mobilisation="data/mobilisation.csv"
 @st.cache_data
@@ -25,11 +27,18 @@ def charge_data_mobilisation():
     df = df[df.CalYear.isin(years)]
     return df
 
+
+#Chargement des données véhicules
 @st.cache_data
 def charge_data_vehicule():
     return pd.read_csv(r"data/T_VehicleType.csv", sep=';')
 
+#Chargement des données calendrier pour les période de congés etc..
+@st.cache_data
+def charge_data_calendrier():
+    return pd.read_csv(r"data/T_Calendar_London_2009_2024.csv", sep=';')
 
+#Chargement des données quartier (géometrie pour la carto)
 @st.cache_data
 def charge_geodata_quartier():
     df_quartier =[]
@@ -51,6 +60,7 @@ def charge_geodata_quartier():
     return df_quartier
 
 
+#Chargement des données station (position géographique des caserne de pompier)
 @st.cache_data
 def charge_geodata_stations():
     df_stations = gpd.read_file("data/stations.csv")
@@ -60,6 +70,7 @@ def charge_geodata_stations():
     return df_stations
 
 
+#completudes des données manquantes pour la location des interventions.
 @st.cache_data
 def charge_geodata_interventions(df_incident):
     bng = 'epsg:27700'
@@ -83,12 +94,12 @@ def charge_geodata_interventions(df_incident):
     geo_data_gpd = geo_data_gpd[geo_data_gpd['Latitude']<51.8]
     return geo_data_gpd
     
-
+#Merge entre les table Incident et mobilisation
 @st.cache_resource   
 def merge_df(df1,df2, the_left_on, the_right_on, the_how ):
     return pd.merge(df1,df2,left_on=the_left_on,right_on=the_right_on,how=the_how)
 
-
+#ajout des données vehicule.
 @st.cache_resource   
 def merge_df_vehicule(df1,df2, the_left_on, the_right_on, the_how ):
     df1['Resource_Code_vehicule'] = df1['Resource_Code'].apply(lambda x:str(x)[3:])
