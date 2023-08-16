@@ -5,16 +5,20 @@ import pyproj
 from pyproj import Transformer, transform
 from shapely.geometry import Polygon
 import json
+import psutil
+import time
 
 years = [2022,2023]
 years_string = "2022,2023"
 
 #Chargement des données Incidents depuis le site des données de Londre.
-url_incident="https://data.london.gov.uk/download/london-fire-brigade-incident-records/73728cf4-b70e-48e2-9b97-4e4341a2110d/LFB%20Incident%20data%20-%20Datastore%20-%20with%20notional%20cost%20and%20UPRN%20from%20January%202009.zip"
+#url_incident="https://data.london.gov.uk/download/london-fire-brigade-incident-records/73728cf4-b70e-48e2-9b97-4e4341a2110d/LFB%20Incident%20data%20-%20Datastore%20-%20with%20notional%20cost%20and%20UPRN%20from%20January%202009.zip"
+url_incident="https://data.london.gov.uk/download/london-fire-brigade-incident-records/73728cf4-b70e-48e2-9b97-4e4341a2110d/LFB%20Incident%20data%20-%20Datastore%20-%20with%20notional%20cost%20and%20UPRN%20from%20January%202009.csv"
 #url_incident="data/incident.csv"
 @st.cache_data
 def charge_data_incident():
-    df = pd.read_csv(url_incident, compression='zip', low_memory=False)
+    #df = pd.read_csv(url_incident, compression='zip', low_memory=False)
+    df = pd.read_csv(url_incident, low_memory=False)
     df = df[df.CalYear.isin(years)]
     return df
 
@@ -104,3 +108,31 @@ def merge_df(df1,df2, the_left_on, the_right_on, the_how ):
 def merge_df_vehicule(df1,df2, the_left_on, the_right_on, the_how ):
     df1['Resource_Code_vehicule'] = df1['Resource_Code'].apply(lambda x:str(x)[3:])
     return pd.merge(df1,df2,left_on=the_left_on,right_on=the_right_on,how=the_how)
+
+def conso_memoire(mem_usage_text):
+    #st.title("Affichage de la mémoire consommée par Streamlit")
+    # Créer un emplacement vide dans la barre latérale pour afficher la mémoire utilisée
+    #mem_usage_text = st.sidebar.empty()
+    
+
+    # Obtenir l'ID du processus Streamlit
+    streamlit_pid = psutil.Process()
+
+    # Obtenir les informations sur la mémoire du processus Streamlit
+    mem_info = streamlit_pid.memory_info()
+    
+    mem_used_str = convert_bytes(mem_info.rss)
+
+    # Afficher la mémoire consommée par Streamlit dans l'application
+    #st.sidebar.write("Mémoire utilisée par Streamlit : ", convert_bytes(mem_info.rss))
+    mem_usage_text.text(f"Mémoire utilisée : {mem_used_str}")
+
+
+    
+    
+# Fonction pour convertir les octets en méga-octets, gigaoctets, etc.
+def convert_bytes(num):
+    for x in ['octets', 'Ko', 'Mo', 'Go', 'To']:
+        if num < 1024.0:
+            return f"{num:.2f} {x}"
+        num /= 1024.0    

@@ -9,6 +9,8 @@ st.set_page_config(
     page_title="LFB",
     page_icon="🚨",
 )
+mem_usage_text = st.sidebar.empty()
+
 
 df_incident = commun.charge_data_incident()
 df_mob = commun.charge_data_mobilisation()
@@ -188,9 +190,11 @@ if page == pages[3] :
         )
     
         
-    
-    
-    
+####################################################
+# conso memoire
+####################################################
+commun.conso_memoire(mem_usage_text)    
+####################################################
     
     
     

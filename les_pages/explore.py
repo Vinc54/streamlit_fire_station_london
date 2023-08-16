@@ -11,7 +11,7 @@ st.set_page_config(
     page_title="LFB",
     page_icon="🚨",
 )
-
+mem_usage_text = st.sidebar.empty()
 
 #st.title("Projet des temps de déplacement des pompiers de Londre")
 st.sidebar.title("Exploration des données")
@@ -106,4 +106,12 @@ if page == pages[3] :
     
     st.write("#### Intégration de la typologie de véhicule dans nos analyses")
     st.markdown(f'Les valeurs prises par "Resource_Code" sont : \n {df.Resource_Code.unique().tolist()}')
+    
+    
+    
+####################################################
+# conso memoire
+####################################################
+commun.conso_memoire(mem_usage_text)    
+####################################################
     

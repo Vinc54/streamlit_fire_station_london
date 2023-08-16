@@ -15,6 +15,7 @@ st.set_page_config(
     page_icon="🚨",
     layout="wide"
 )
+mem_usage_text = st.sidebar.empty()
 
 pages=["Londres", "les interventions", "autres cartos", "test"]
 page=st.sidebar.radio("Sommaire", pages)
@@ -161,49 +162,18 @@ if page == pages[2] :
         st.subheader(f'Nom du Quatier : {quartier}')
         
         
-    if __name__ == "__main__":
-        main()    
+    #if __name__ == "__main__":
+    main()    
     
     
 
 if page == pages[3] :
-
-    def on_click(event):
-        # Actions à effectuer lorsque le marqueur est cliqué
-        st.write("Marqueur cliqué !")
-        
-        
-    st.title("Folium Map in Streamlit")
-    import folium
-    from streamlit_folium import folium_static
-    
-    London_map = folium.Map(location=[51.470000, -0.100000], zoom_start=10)
-    London_figure = folium.Figure(width=700, height=550)
-    London_figure.add_child(London_map)
-    
-
-    for _, r in df_quartier.iterrows():
-        sim_geo = gpd.GeoSeries(r['geometry']).simplify(tolerance=0.001)
-        geo_j = sim_geo.to_json()
-        geo_j = folium.GeoJson(data=geo_j,style_function=lambda x: {'fillColor': 'orange'})
-        folium.Popup(r['borough']).add_to(geo_j)
-        
-        geo_j.add_to(London_map)
-    
-    tooltip = "Click me!"
-    for (index, station) in df_stations.iterrows():
-        folium.CircleMarker([station['latitude'], station['longitude']],radius=3, color='black',  popup=str(station['name']), tooltip=tooltip).add_to(London_map)
-        
-    
-    #London_map.add_child(folium.ClickForMarker(popup="Marker added at {latitude}, {longitude}"))
-    
-    
-
-
-    
-    folium_static(London_figure)
-    
-    
-    
-    
     st.write("fin")
+    
+    
+    
+####################################################
+# conso memoire
+####################################################
+commun.conso_memoire(mem_usage_text)    
+####################################################
