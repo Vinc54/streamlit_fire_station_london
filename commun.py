@@ -8,8 +8,8 @@ import json
 import psutil
 import time
 
-years = [2021,2022]
-years_string = "2021,2022"
+years = [2020,2021,2022]
+years_string = "2020,2021,2022"
 
 #Chargement des données Incidents depuis le site des données de Londre.
 #url_incident="https://data.london.gov.uk/download/london-fire-brigade-incident-records/73728cf4-b70e-48e2-9b97-4e4341a2110d/LFB%20Incident%20data%20-%20Datastore%20-%20with%20notional%20cost%20and%20UPRN%20from%20January%202009.zip"
